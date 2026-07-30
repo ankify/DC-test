@@ -6,6 +6,29 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - name: x1-y4
+            x: 1
+            y: 4
+          - name: x2-y4
+            x: 2
+            y: 4
+          - name: x3-y4
+            x: 3
+            y: 4
+          - name: x4-y4
+            x: 4
+            y: 4
+          - name: x4-y8
+            x: 4
+            y: 8
+          - name: x2-y16
+            x: 2
+            y: 16
     steps:
       - uses: actions/checkout@v4
 
@@ -14,10 +37,19 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.name }}
 
-      - name: Run speed test
+      - name: Run speed test (${{ matrix.name }})
         env:
           API_ID: ${{ secrets.API_ID }}
           API_HASH: ${{ secrets.API_HASH }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          RUST_LOG: debug
+          DOWNLOAD_TCP_CONNECTIONS: ${{ matrix.y }}
+          UPLOAD_TCP_CONNECTIONS: ${{ matrix.y }}
+          DOWNLOAD_PIPELINE_DEPTH: ${{ matrix.x }}
+          UPLOAD_PIPELINE_DEPTH: ${{ matrix.x }}
+          MAX_TCP_CONNECTIONS: 16
+          BYPASS_TCP_ALLOTMENTS: "true"
         run: cargo run --release

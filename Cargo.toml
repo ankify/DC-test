@@ -1,0 +1,8 @@
+[package]
+name = "dc-speed-bot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ferogram = { git = "https://github.com/ankit-chaubey/ferogram", branch = "main" }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "fs"] }
